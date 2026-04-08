@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Obsidian Camera Gallery</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed-dim": "#6ee7b7",
+                    "on-primary-fixed": "#2e1065",
+                    "surface-variant": "#18181b",
+                    "surface": "#0c0c0f",
+                    "tertiary-container": "#065f46",
+                    "surface-container-high": "#18181b",
+                    "on-surface": "#fafafa",
+                    "on-surface-variant": "#a1a1aa",
+                    "surface-container-highest": "#1e1e22",
+                    "primary": "#a78bfa",
+                    "outline-variant": "#27272a",
+                    "surface-dim": "#0c0c0f",
+                    "on-tertiary": "#001a12",
+                    "secondary-fixed-dim": "#71717a",
+                    "on-background": "#fafafa",
+                    "secondary": "#71717a",
+                    "on-tertiary-fixed": "#003318",
+                    "on-primary-container": "#ede9fe",
+                    "inverse-primary": "#5b21b6",
+                    "primary-fixed": "#ede9fe",
+                    "on-error": "#1a0000",
+                    "inverse-on-surface": "#09090b",
+                    "background": "#09090b",
+                    "outline": "#52525b",
+                    "surface-bright": "#18181b",
+                    "surface-container-lowest": "#09090b",
+                    "on-secondary-container": "#a1a1aa",
+                    "on-secondary-fixed": "#18181b",
+                    "on-primary-fixed-variant": "#5b21b6",
+                    "on-secondary-fixed-variant": "#3f3f46",
+                    "on-primary": "#0a0012",
+                    "on-tertiary-fixed-variant": "#047857",
+                    "secondary-fixed": "#a1a1aa",
+                    "surface-container": "#121215",
+                    "primary-container": "#7c3aed",
+                    "error": "#ef4444",
+                    "surface-container-low": "#0f0f12",
+                    "primary-fixed-dim": "#c4b5fd",
+                    "on-secondary": "#09090b",
+                    "surface-tint": "#a78bfa",
+                    "error-container": "#3b1111",
+                    "tertiary-fixed": "#bbf7d0",
+                    "inverse-surface": "#fafafa",
+                    "tertiary": "#34d399",
+                    "secondary-container": "#27272a",
+                    "on-tertiary-container": "#bbf7d0",
+                    "on-error-container": "#fca5a5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Geist", "sans-serif"],
+                    "body": ["Geist", "sans-serif"],
+                    "label": ["Geist", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #09090b; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen selection:bg-primary/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 flex justify-between items-center px-4 h-14 w-full">
+<div class="flex items-center gap-4">
+<button class="hover:bg-zinc-800 transition-colors p-2 rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined text-zinc-400">arrow_back</span>
+</button>
+<h1 class="text-lg font-black text-zinc-100 font-geist tracking-tight">Gallery</h1>
+</div>
+<div class="flex items-center gap-1">
+<button class="hover:bg-zinc-800 transition-colors p-2 rounded-full text-zinc-400 active:scale-95 duration-150">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="hover:bg-zinc-800 transition-colors p-2 rounded-full text-zinc-400 active:scale-95 duration-150">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</header>
+<main class="pt-14 pb-24 px-4 max-w-7xl mx-auto">
+<!-- Filter Chips (Custom Component for professional feel) -->
+<div class="flex gap-2 py-4 overflow-x-auto no-scrollbar">
+<button class="px-4 py-1.5 rounded-full bg-primary text-on-primary text-sm font-medium">All</button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container border border-outline-variant text-on-surface-variant text-sm font-medium hover:text-on-surface">Photos</button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container border border-outline-variant text-on-surface-variant text-sm font-medium hover:text-on-surface">Videos</button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container border border-outline-variant text-on-surface-variant text-sm font-medium hover:text-on-surface">RAW</button>
+</div>
+<!-- Asymmetric Bento Grid Gallery -->
+<div class="grid grid-cols-4 gap-3">
+<!-- Featured Selected Image with EXIF Overlay -->
+<div class="col-span-4 lg:col-span-3 aspect-[16/9] relative group overflow-hidden rounded-xl border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="cinematic close-up of a high-end camera lens reflecting a neon urban sunset with moody deep shadows and sharp violet highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOW9N8WDKXUp8rvzuPVrieJBgT-lpf8GuOX4-oQTF7rTP37dLJNorrjfzwb5ORlT_BiDopSkIsgWwE_BEdrrVu_CvMFJbLtcA4DhBRbb5Gi__TOtupQSLpIbeTcOv2LaJZmmuzVd71wh35fVnlGtUtF2C0TqqJ2xrp36TF4rmVz_YuBuVH-mbh8PtddPtffngUE9w4cN66I7wbZxXCn6Ff24gtVLywtFmF9VIlZdbR25Z58st9KBsC99u89AlyyewxNUYEPcyjcrk"/>
+<!-- EXIF Overlay -->
+<div class="absolute bottom-4 left-4 p-4 bg-zinc-950/80 backdrop-blur-md rounded-lg border border-zinc-800 flex flex-col gap-2">
+<div class="flex items-center gap-4">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">ISO</span>
+<span class="text-sm font-mono text-tertiary">100</span>
+</div>
+<div class="w-px h-6 bg-zinc-800"></div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Shutter</span>
+<span class="text-sm font-mono text-tertiary">1/250s</span>
+</div>
+<div class="w-px h-6 bg-zinc-800"></div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Aperture</span>
+<span class="text-sm font-mono text-tertiary">f/1.8</span>
+</div>
+<div class="w-px h-6 bg-zinc-800"></div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Lens</span>
+<span class="text-sm font-mono text-zinc-300">35mm</span>
+</div>
+</div>
+</div>
+<div class="absolute top-4 right-4">
+<span class="bg-primary text-on-primary text-[10px] font-bold px-2 py-1 rounded tracking-tighter">RAW</span>
+</div>
+</div>
+<!-- Side Bento Items -->
+<div class="col-span-2 lg:col-span-1 aspect-square relative group overflow-hidden rounded-xl border border-outline-variant">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="breathtaking aerial view of misty mountains during blue hour with soft ambient light and a serene professional mood" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRdkMl9EGvJBLICJ7pTNnIVZxiQI1M9_OXVKlU7alQtZG4CeYYEUas9C6udhQusSQBn3kkEGtcaTrtZ6psskqzoMXSpofUP6gGpbS9txO6UfGpP2iHhEsx1GE1ip9_6qPF2zkz0EIIHhlscAPLG0zutiPaNsI-xkJicfxhPSZ-tRjPlm5P-ofQHJkDugOCgJCm9w2ubof1a16cKiiu1eQmGNFJV1OyhbD2-JoeczJjNANfD7Pd3rG3ffVZvGOkAEmgm4Gr1S_kUAc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+<span class="text-xs text-white">Mountain_Peak.arw</span>
+</div>
+</div>
+<div class="col-span-2 lg:col-span-1 aspect-square relative group overflow-hidden rounded-xl border border-outline-variant">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="stark black and white architectural photography showing clean sharp geometric lines of a modern concrete building" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAY9Gqe77jt3rAkkKhrShLgwn9dwdUfp2XKUp2uswvDW6CeuvoaiwfdGahi0X4X74waOPjmpP3SITMJXNTAh8cEaVatN2aCaN8FfERyVUXTCMOgULQ_AZOMvHc_oL3GPCmLQhe7J2RUjntSteEHrZ18hi_1373X4bb_-_ZRsvKWtzxeC6nvzxW8fljLDEN3u7iHidh7toZe4CHN5tBii2VpMKTzoIKvDpeZgAMrvO87i4jqN6uHgpRCiuAMg1WW5Ac18ONHcgRDBDk"/>
+<div class="absolute top-2 right-2">
+<span class="material-symbols-outlined text-white text-lg">videocam</span>
+</div>
+</div>
+<!-- Standard Grid Row -->
+<div class="col-span-1 aspect-square relative group overflow-hidden rounded-xl border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="extreme close-up of morning dew on a vibrant green leaf with shallow depth of field and soft morning sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8MfkQbJNgRuXH3ly1xcSNX1Y0Ywvslp3JXx_86hiPEwZ745xu5bpIosrlnwGPRNt8V7AeMP1dFv8_3e8E76gyLjIYKkO6ghPCwzLhU5ingoA1kRTmtxKBMsewswNzpQnUwMqGckFiBCPSm-Chl5WFSz9CnSSQrkXt4LI2RecjApX6jbh1FW2k2Z3d7jzigS6QnS0bh3W6ZLL1UX6INoCda8z76hVldbELU3V3iroh84xyXOVlbh7Ate_kGKiq1nTnHNo6kW3NNj8"/>
+</div>
+<div class="col-span-1 aspect-square relative group overflow-hidden rounded-xl border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="wide landscape of a desert oasis with dramatic orange sandstone cliffs under a clear twilight sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHY-1whDtPQfdSjlFKdaZ5jGL0Ba4Vw8LkLE6nLLbA37inn8nYxO_83fCYxD3isCpxQ5SVsQc8tM0tEY_GTUGh_M_5dbR0V_1Iwjo1GRphtV5hAj7dh74sxJTJUH_1Ewiasb-5dFjjdi-m-Vi-rnSDJIeCxAow_kSPgEouY8FwIw9lgJVYZzl9MS1VLo6cJKRIVpB3hkJ240wSen034empFpGqVXPy8LG5bhf2SB6XlyOAkoAv-Cgihrk2tmQrkfWmM6AObgiMF68"/>
+</div>
+<div class="col-span-1 aspect-square relative group overflow-hidden rounded-xl border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="dense forest interior with sunbeams breaking through the canopy hitting the forest floor creating high contrast light play" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIY9Za5eYVblB7l82HIdRoICTo-OFsgNZhkB2r7NUr8mClUnt-_0KnAfk9hR5p397Fqw-9j_hPk8GIjJqq-uVLpi_C1zRU-Vxdg_U7cA-L2of5vhGvr8DY1SSqPDBq-hdNq2tfnTeWDuJflw_Xhjk0nIGfgUDO9cUu1rBNnM4cp1stid8sI4_Z1vKDc7sCKS62jfSg1OTKR1I5y7SF9nlV9HIowvVbsukRc5jEElwyiyLSXZ50xDLGYqcKJ9za9I3_AMXxBV3afN8"/>
+</div>
+<div class="col-span-1 aspect-square relative group overflow-hidden rounded-xl border border-outline-variant border-primary ring-2 ring-primary/20">
+<img class="w-full h-full object-cover" data-alt="mystical redwood forest with tall ancient trees rising into the fog creating a somber professional aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACPKxyh1BU-quo28tj5Ob_ZktuXyYCIH5szssawnu36iIHDwNpOKj8U3o3Nu-nMwU-lq1vVXSFoFiHoEXqnC4KnxkVPTaroT8ANcRV8SIl8diYxr4w-RF0PDR91PRyV1F3z5dp-SCFZ8zbU2sfWyLfhEpbDX4O4RQp1nQm4o-MbMcwBGUab8tO0elhLM7wb27VKyrAf13vcsOUPUCf0g-rpTwYL7LgJ022vmtwlqTaDPKEXGxCTg2vpug6a9VjHjE3naxEgi0Pdkk"/>
+<div class="absolute inset-0 bg-primary/10 flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+</div>
+</div>
+<div class="col-span-2 aspect-[2/1] relative group overflow-hidden rounded-xl border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="serene lake reflecting a colorful sunset with distant mountains in soft violet and deep indigo tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlRhj7G_ViH8xreLNjIj7tNCZFPbdSzgOsCvPZI7i1Tr_NYBsy_cZ5cWPUIwqOQgHDZVKcejDRtzfEYDFBx61gYR3nvrS_SHQM8cagJufpAnQfvOSwNOOICJdwH0K7Rz04B7GLlYhTEHzzcSl3ozuIBL5Q4F1vlQWezDVsb9zMOHW-_oyhn84qVXJBgYylJn4hxq-4q6PqWP1EvhmG2vq5QC1-5CXZ9yygZ_9yjduIas1JHzce4is5rVHOzgT_r0Z73_q1ng4HTJo"/>
+</div>
+<div class="col-span-2 aspect-[2/1] relative group overflow-hidden rounded-xl border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="rugged mountain range with snow-capped peaks under a high contrast moody sky at dusk" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCmMQoK8OCLaN42EIgcwDgKjBH7NTzxm-2M5nLmjVjiYXBzg1Yf7Y-Xg1KLPvHbCpJSI7CEuVFhLI2L48g4ng0xJlgsrzBv3YUYwLSCaB7fy3jFMton54rdeSAteihwL9lwzfHokJ46dePmFQxEwDi84V59dhVh_d--zaPaNq312d_O3zJjRuBkEOoqUC_xjSEx9ZjcPMbFq7-M_Ynqc6nnMelmsgCstIQSx3qlUC20StSfrWKSz0QcNqdiiAKBJOJrGKOuBXDkqQ"/>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<!-- Floating Navigation Trigger (NavigationDrawer hidden by default) -->
+<div class="fixed left-0 top-0 h-full w-64 bg-zinc-900 border-r border-zinc-800 transform -translate-x-full transition-transform duration-300 z-[60] lg:hidden">
+<div class="p-6 border-b border-zinc-800">
+<span class="text-violet-400 font-bold font-geist">Modes</span>
+</div>
+<div class="py-4">
+<div class="flex items-center gap-3 px-6 py-3 bg-zinc-800 text-emerald-400 border-l-4 border-emerald-400 transition-all duration-200">
+<span class="material-symbols-outlined">photo_camera</span>
+<span class="font-geist font-medium text-sm">Photo</span>
+</div>
+<div class="flex items-center gap-3 px-6 py-3 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition-all duration-200">
+<span class="material-symbols-outlined">videocam</span>
+<span class="font-geist font-medium text-sm">Video</span>
+</div>
+<div class="flex items-center gap-3 px-6 py-3 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition-all duration-200">
+<span class="material-symbols-outlined">tune</span>
+<span class="font-geist font-medium text-sm">Pro</span>
+</div>
+<div class="flex items-center gap-3 px-6 py-3 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition-all duration-200">
+<span class="material-symbols-outlined">portrait</span>
+<span class="font-geist font-medium text-sm">Portrait</span>
+</div>
+</div>
+</div>
+</body></html>
