@@ -1,30 +1,44 @@
-# AGENTS.md — Foton
+# AGENTS.md
 
 ## Project
 
-Cross-platform camera app (Android, iOS, Desktop, Web) applying real-time GPU shader effects to the camera feed. Long exposures + hardware-rendered effects. Early stage — no source code yet, design phase.
+Cross-platform camera app (Android/iOS/Desktop/Web) with real-time GPU shader effects, long exposures, and modular extension ecosystem. Currently in design phase — no source code yet.
 
-## Stitch Integration
+## Stack
 
-- The Stitch MCP server is configured in `opencode.json`. All Stitch tool calls use the `stitch_` prefix (e.g., `stitch_list_projects`, `stitch_get_screen`, `stitch_generate_screen_from_text`).
-- **Stitch Project ID:** `4117826763267720202` (title: "Pro Android Camera")
-- Screen assets (screenshots + HTML) are saved under `screens/{n}-{name}/` with `screenshot.png` and `code.html`.
+- **React 19** + **TypeScript** + **Vite 6** (ESM: `"type": "module"`)
+- **Tailwind CSS v4** via `@tailwindcss/vite` plugin (not PostCSS — v4 style config)
+- **Zustand v5** for state
+- **react-router-dom v7** for routing
+- TypeScript ~5.7
 
-## Design System
+## Build & Run
 
-- Full design system is documented in `DESIGN.md` — the source of truth for visual language, color palette, typography, and component patterns.
-- When generating new Stitch screens, reference `DESIGN.md` for consistent design tokens and styling conventions.
+```sh
+npm run dev          # Vite dev server
+npm run build        # tsc -b && vite build (typecheck then build)
+npm run preview      # Vite production preview
+```
 
-## Key Conventions
+No test command is configured yet (`npm test` exits with error).
 
-- All Stitch screen HTML uses Tailwind CSS via CDN with a custom `tailwind.config` block defining the project's named color tokens (primary `#a78bfa`, tertiary `#34d399`, zinc surface scale).
-- Font: **Geist** throughout (headline, body, label).
-- Dark mode only — never use light backgrounds.
-- Border-based separation (`border-zinc-800`) over shadows.
-- Technical camera values always use `font-mono`; micro-labels always uppercase with wide tracking.
-- `package.json` is ESM (`"type": "module"`).
-- No tests, linter, or build pipeline yet (`npm test` is a placeholder that exits 1).
+## Design
 
-## Sensitive Files
+The full design system is in `DESIGN.md`. It defines color palette (obsidian-dark theme), typography (Geist font), component stylings, and layout rules for the camera UI. Any UI work must follow `DESIGN.md`.
 
-- `.env` contains API keys — never commit.
+The project uses the **Stitch MCP** (configured in `opencode.json`) for design generation.
+
+## Conventions
+
+- Dark-only UI — never use light backgrounds
+- Camera values (ISO, shutter speed, etc.) always use `font-mono`
+- Micro-labels are uppercase with wide tracking (signature pattern)
+- Borders (`border-zinc-800`) for separation, not shadows
+- Accent colors are functional only: violet = interactive, emerald = active/success, red = danger/recording
+- no background on header and footer - they should float above the camera preview (which is the main content) — use borders to separate, not backgrounds
+
+## Gotchas
+
+- Tailwind v4 uses CSS-based config (`@theme` in CSS), not `tailwind.config.js` — don't create one
+- `opencode.json` is gitignored (contains MCP keys)
+- `npm run build` runs `tsc -b` first — type errors will block the build
