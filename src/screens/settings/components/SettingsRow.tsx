@@ -5,7 +5,28 @@ import { Toggle } from '../../../components/ui/Toggle';
 import { useSettingsStore } from '../../../stores/settingsStore';
 import { useCameraStore } from '../../../stores/cameraStore';
 
-const CAMERA_SYNC_IDS = new Set(['grid']);
+const CAMERA_TOGGLE_MAP = {
+  grid: {
+    value: (state: ReturnType<typeof useCameraStore.getState>) => state.showGrid,
+    toggle: (state: ReturnType<typeof useCameraStore.getState>) => state.toggleGrid(),
+  },
+  raw: {
+    value: (state: ReturnType<typeof useCameraStore.getState>) => state.showRaw,
+    toggle: (state: ReturnType<typeof useCameraStore.getState>) => state.toggleRaw(),
+  },
+  level: {
+    value: (state: ReturnType<typeof useCameraStore.getState>) => state.showLevel,
+    toggle: (state: ReturnType<typeof useCameraStore.getState>) => state.toggleLevel(),
+  },
+  histogram: {
+    value: (state: ReturnType<typeof useCameraStore.getState>) => state.showHistogram,
+    toggle: (state: ReturnType<typeof useCameraStore.getState>) => state.toggleHistogram(),
+  },
+  overexposure: {
+    value: (state: ReturnType<typeof useCameraStore.getState>) => state.showOverexposureWarning,
+    toggle: (state: ReturnType<typeof useCameraStore.getState>) => state.toggleOverexposureWarning(),
+  },
+} as const;
 
 interface SettingsRowProps {
   readonly row: SettingsRowType;
@@ -15,19 +36,26 @@ interface SettingsRowProps {
 
 export const SettingsRow: React.FC<SettingsRowProps> = ({ row, isLast = false, className = '' }) => {
   const toggleValues = useSettingsStore((s) => s.toggleValues);
+  const selectValues = useSettingsStore((s) => s.selectValues);
   const toggleSetting = useSettingsStore((s) => s.toggleSetting);
-  const cameraToggleGrid = useCameraStore((s) => s.toggleGrid);
-  const cameraShowGrid = useCameraStore((s) => s.showGrid);
+  const cycleSetting = useSettingsStore((s) => s.cycleSetting);
+  const cameraState = useCameraStore();
 
-  const isCameraSync = CAMERA_SYNC_IDS.has(row.id);
+  const cameraSync = CAMERA_TOGGLE_MAP[row.id as keyof typeof CAMERA_TOGGLE_MAP];
   const settingsValue = toggleValues[row.id] ?? (row.action.type === 'toggle' ? (row.action.value as boolean) : false);
-  const checked = isCameraSync ? cameraShowGrid : settingsValue;
+  const checked = cameraSync ? cameraSync.value(cameraState) : settingsValue;
+  const selectValue = selectValues[row.id] ?? (row.action.value as string | undefined) ?? row.description ?? '';
 
   const handleChange = () => {
-    if (isCameraSync) {
-      cameraToggleGrid();
+    if (cameraSync) {
+      cameraSync.toggle(cameraState);
+      return;
     }
     toggleSetting(row.id);
+  };
+
+  const handleSelect = () => {
+    cycleSetting(row.id);
   };
 
   return (
@@ -50,6 +78,14 @@ export const SettingsRow: React.FC<SettingsRowProps> = ({ row, isLast = false, c
       <div>
         {row.action.type === 'toggle' ? (
           <Toggle checked={checked} onChange={handleChange} label={row.label} />
+        ) : row.action.type === 'select' ? (
+          <button
+            type="button"
+            onClick={handleSelect}
+            className="min-w-28 rounded-full border border-zinc-800 bg-zinc-950/60 px-3 py-1 text-right text-xs font-mono text-violet-400 transition-colors hover:border-violet-400/40"
+          >
+            {selectValue}
+          </button>
         ) : row.action.type === 'link' ? (
           <Icon name="chevron_right" size={20} className="text-on-surface-variant" />
         ) : null}

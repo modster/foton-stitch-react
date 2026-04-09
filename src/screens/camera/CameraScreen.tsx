@@ -1,5 +1,6 @@
-import React, { Suspense } from 'react';
-import { useCameraStore } from '../../stores/cameraStore';
+import React, { Suspense, useEffect } from 'react';
+import { buildHudValues, useCameraStore } from '../../stores/cameraStore';
+import { useSettingsStore } from '../../stores/settingsStore';
 import { CameraTopBar, BottomNavBar, HUDOverlay, ModeSelector, ZoomSelector, ViewfinderGrid, Viewfinder, FocusSlider } from './components';
 import { getModeById } from '../../extensions/registry';
 import { useWebcam } from '../../hooks/useWebcam';
@@ -16,12 +17,24 @@ const ModeFallback: React.FC = () => (
 
 export const CameraScreen: React.FC<CameraScreenProps> = () => {
   const activeModeId = useCameraStore((s) => s.activeModeId);
+  const exposureDurationMs = useCameraStore((s) => s.exposureDurationMs);
   const showGrid = useCameraStore((s) => s.showGrid);
   const showFocusSlider = useCameraStore((s) => s.showFocusSlider);
-  const { videoRef, error, switchCamera } = useWebcam({ facingMode: 'environment' });
+  const setHudValues = useCameraStore((s) => s.setHudValues);
+  const videoResolution = useSettingsStore((s) => s.selectValues['video-res'] ?? '4K @ 30fps');
+  const stabilizationEnabled = useSettingsStore((s) => s.toggleValues.stabilization ?? true);
+  const { videoRef, error, switchCamera, focusSupported, applyFocus } = useWebcam({
+    facingMode: 'environment',
+    videoResolution,
+    stabilizationEnabled,
+  });
 
   const activeMode = getModeById(activeModeId);
   const ModeComponent = activeMode?.component;
+
+  useEffect(() => {
+    setHudValues(buildHudValues(activeModeId, { videoResolution, exposureDurationMs }));
+  }, [activeModeId, exposureDurationMs, setHudValues, videoResolution]);
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-background flex flex-col">
@@ -30,7 +43,7 @@ export const CameraScreen: React.FC<CameraScreenProps> = () => {
         <Viewfinder videoRef={videoRef} error={error} />
         <HUDOverlay />
         <ZoomSelector />
-        {showFocusSlider && <FocusSlider />}
+        {showFocusSlider && <FocusSlider focusSupported={focusSupported} onFocusChange={applyFocus} />}
         {showGrid && <ViewfinderGrid />}
         <Suspense fallback={<ModeFallback />}>
           {ModeComponent && <ModeComponent />}

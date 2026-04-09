@@ -1,6 +1,7 @@
 import React, { useCallback, useRef, useState, useEffect } from 'react';
-import { useCameraStore } from '../../../stores/cameraStore';
+import { formatDurationLabel, useCameraStore } from '../../../stores/cameraStore';
 import { useGalleryStore } from '../../../stores/galleryStore';
+import { useSettingsStore } from '../../../stores/settingsStore';
 import { useCapture } from '../../../hooks/useCapture';
 import type { RefObject } from 'react';
 
@@ -19,27 +20,48 @@ export const ShutterButton: React.FC<ShutterButtonProps> = ({ videoRef, classNam
   const stopExposing = useCameraStore((s) => s.stopExposing);
   const setExposureElapsed = useCameraStore((s) => s.setExposureElapsed);
   const addItem = useGalleryStore((s) => s.addItem);
-  const { capture, download, startRecording, stopRecording } = useCapture({ videoRef: videoRef ?? { current: null } });
+  const jpegQuality = useSettingsStore((s) => s.selectValues['jpeg-quality'] ?? 'Maximum');
+  const saveLocation = useSettingsStore((s) => s.selectValues['save-location'] ?? 'Browser Downloads');
+  const geotagEnabled = useSettingsStore((s) => s.toggleValues.geotag ?? true);
+  const { capture, download, downloadBlob, startRecording, stopRecording } = useCapture({ videoRef: videoRef ?? { current: null } });
   const flashRef = useRef<HTMLDivElement>(null);
   const [leProgress, setLeProgress] = useState(0);
   const leStartTimeRef = useRef<number | null>(null);
   const leFrameRef = useRef<number | null>(null);
 
-  const handlePhotoCapture = useCallback(() => {
-    const dataUrl = capture();
+  const imageQuality = jpegQuality === 'Medium' ? 0.72 : jpegQuality === 'High' ? 0.86 : 0.92;
+  const shouldDownload = saveLocation === 'Browser Downloads';
+
+  const buildLocationSuffix = useCallback(async () => {
+    if (!geotagEnabled || !navigator.geolocation) return '';
+
+    return new Promise<string>((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) => resolve(` @ ${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)}`),
+        () => resolve(''),
+        { enableHighAccuracy: false, timeout: 2500, maximumAge: 300000 },
+      );
+    });
+  }, [geotagEnabled]);
+
+  const handlePhotoCapture = useCallback(async () => {
+    const dataUrl = capture(imageQuality);
     if (!dataUrl) return;
 
     const now = new Date();
     const timestamp = now.toISOString().replace(/[:.]/g, '-');
     const filename = `Foton_${timestamp}.jpg`;
+    const locationSuffix = await buildLocationSuffix();
 
-    download(dataUrl, filename);
+    if (shouldDownload) {
+      download(dataUrl, filename);
+    }
 
     addItem({
       id: `capture-${timestamp}`,
       type: 'photo',
       src: dataUrl,
-      alt: `Captured photo ${now.toLocaleString()}`,
+      alt: `Captured photo ${now.toLocaleString()}${locationSuffix}`,
       span: 'full',
       isFeatured: false,
       exif: { shutter: '1/500', iso: '200', aperture: 'f/1.8', whiteBalance: '5500K', focalLength: '26mm' },
@@ -51,46 +73,53 @@ export const ShutterButton: React.FC<ShutterButtonProps> = ({ videoRef, classNam
         if (flashRef.current) flashRef.current.style.opacity = '0';
       }, 150);
     }
-  }, [capture, download, addItem]);
+  }, [addItem, buildLocationSuffix, capture, download, imageQuality, shouldDownload]);
 
   const handleVideoToggle = useCallback(async () => {
     if (!isRecording) {
       const started = startRecording();
       if (started) toggleRecording();
     } else {
-      const videoUrl = await stopRecording();
+      const recording = await stopRecording();
       toggleRecording();
-      if (videoUrl) {
+      if (recording) {
         const now = new Date();
         const timestamp = now.toISOString().replace(/[:.]/g, '-');
-        const thumbnail = capture();
+        const thumbnail = capture(imageQuality);
+        const locationSuffix = await buildLocationSuffix();
+        if (shouldDownload) {
+          downloadBlob(recording.blob, `Foton_${timestamp}.${recording.extension}`);
+        }
         addItem({
           id: `video-${timestamp}`,
           type: 'video',
           src: thumbnail ?? '',
-          alt: `Recorded video ${now.toLocaleString()}`,
+          alt: `Recorded video ${now.toLocaleString()}${locationSuffix}`,
           span: 'full',
-          videoSrc: videoUrl,
+          videoSrc: recording.url,
         });
       }
     }
-  }, [isRecording, startRecording, stopRecording, toggleRecording, capture, addItem]);
+  }, [addItem, buildLocationSuffix, capture, downloadBlob, imageQuality, isRecording, shouldDownload, startRecording, stopRecording, toggleRecording]);
 
-  const handleLongExposureCapture = useCallback(() => {
-    const dataUrl = capture();
+  const handleLongExposureCapture = useCallback(async () => {
+    const dataUrl = capture(imageQuality);
     if (!dataUrl) return;
     const now = new Date();
     const timestamp = now.toISOString().replace(/[:.]/g, '-');
+    const locationSuffix = await buildLocationSuffix();
     addItem({
       id: `le-${timestamp}`,
       type: 'photo',
       src: dataUrl,
-      alt: `Long exposure ${now.toLocaleString()}`,
+      alt: `Long exposure ${now.toLocaleString()}${locationSuffix}`,
       span: 'full',
-      exif: { shutter: `${exposureDurationMs}ms`, iso: '100', aperture: 'f/11', whiteBalance: 'Auto', focalLength: '26mm' },
+      exif: { shutter: formatDurationLabel(exposureDurationMs), iso: '100', aperture: 'f/11', whiteBalance: 'Auto', focalLength: '26mm' },
     });
-    download(dataUrl, `Foton_LE_${timestamp}.jpg`);
-  }, [capture, addItem, download, exposureDurationMs]);
+    if (shouldDownload) {
+      download(dataUrl, `Foton_LE_${timestamp}.jpg`);
+    }
+  }, [addItem, buildLocationSuffix, capture, download, exposureDurationMs, imageQuality, shouldDownload]);
 
   const handlePress = useCallback(() => {
     if (activeModeId === 'video') {

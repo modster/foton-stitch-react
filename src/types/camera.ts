@@ -33,8 +33,13 @@ export interface CameraState {
   readonly exposureDurationMs: number;
   readonly hudValues: ReadonlyArray<HUDChip>;
   readonly activeLensId: string;
+  readonly focusValue: number;
+  readonly focusSupported: boolean;
   readonly showGrid: boolean;
   readonly showFocusSlider: boolean;
+  readonly showLevel: boolean;
+  readonly showHistogram: boolean;
+  readonly showOverexposureWarning: boolean;
   readonly flashMode: FlashMode;
   readonly showRaw: boolean;
 }
@@ -47,8 +52,13 @@ export interface CameraActions {
   setExposureDuration: (ms: number) => void;
   setHudValues: (values: ReadonlyArray<HUDChip>) => void;
   setActiveLens: (id: string) => void;
+  setFocusValue: (value: number) => void;
+  setFocusSupported: (supported: boolean) => void;
   toggleGrid: () => void;
   toggleFocusSlider: () => void;
+  toggleLevel: () => void;
+  toggleHistogram: () => void;
+  toggleOverexposureWarning: () => void;
   cycleFlash: () => void;
   toggleRaw: () => void;
   stopExposing: () => void;

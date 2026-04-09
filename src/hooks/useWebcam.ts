@@ -1,26 +1,104 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import type { RefObject } from 'react';
+import { useCameraStore } from '../stores/cameraStore';
 
 interface UseWebcamOptions {
   readonly facingMode?: 'user' | 'environment';
   readonly enabled?: boolean;
+  readonly videoResolution?: string;
+  readonly stabilizationEnabled?: boolean;
 }
 
 interface UseWebcamReturn {
-  readonly videoRef: React.RefObject<HTMLVideoElement | null>;
+  readonly videoRef: RefObject<HTMLVideoElement | null>;
   readonly stream: MediaStream | null;
   readonly error: string | null;
   readonly switchCamera: () => void;
   readonly isFrontCamera: boolean;
+  readonly focusSupported: boolean;
+  readonly applyFocus: (value: number) => Promise<void>;
+}
+
+type FocusCapabilities = MediaTrackCapabilities & {
+  focusDistance?: { min?: number; max?: number; step?: number };
+  focusMode?: string[];
+  stabilizationMode?: string[];
+};
+
+type FocusConstraint = MediaTrackConstraintSet & {
+  focusMode?: 'manual' | 'single-shot' | 'continuous';
+  focusDistance?: number;
+  stabilizationMode?: 'off' | 'auto' | 'steady';
+};
+
+function getResolutionConstraints(videoResolution: string | undefined): MediaTrackConstraints {
+  switch (videoResolution) {
+    case '1080p @ 30fps':
+      return { width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30, max: 30 } };
+    case '1080p @ 60fps':
+      return { width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 60, max: 60 } };
+    case '4K @ 30fps':
+    default:
+      return { width: { ideal: 3840 }, height: { ideal: 2160 }, frameRate: { ideal: 30, max: 30 } };
+  }
+}
+
+async function applyTrackFocus(track: MediaStreamTrack | undefined, value: number, stabilizationEnabled: boolean): Promise<boolean> {
+  if (!track?.applyConstraints) return false;
+
+  const capabilities = (track.getCapabilities?.() ?? {}) as FocusCapabilities;
+  const focusDistance = capabilities.focusDistance;
+  const focusModes = capabilities.focusMode ?? [];
+  const stabilizationModes = capabilities.stabilizationMode ?? [];
+
+  const advanced: FocusConstraint = {};
+  let changed = false;
+
+  if (focusDistance && typeof focusDistance.min === 'number' && typeof focusDistance.max === 'number' && focusModes.includes('manual')) {
+    const range = focusDistance.max - focusDistance.min;
+    advanced.focusMode = 'manual';
+    advanced.focusDistance = focusDistance.min + range * value;
+    changed = true;
+  }
+
+  if (stabilizationModes.length > 0) {
+    advanced.stabilizationMode = stabilizationEnabled && stabilizationModes.includes('auto')
+      ? 'auto'
+      : stabilizationModes.includes('off')
+        ? 'off'
+        : stabilizationModes[0] as FocusConstraint['stabilizationMode'];
+    changed = true;
+  }
+
+  if (!changed) return false;
+
+  try {
+    await track.applyConstraints({ advanced: [advanced] as MediaTrackConstraintSet[] });
+    return Boolean(advanced.focusDistance || advanced.focusMode === 'manual');
+  } catch {
+    return false;
+  }
 }
 
 export function useWebcam(options: UseWebcamOptions = {}): UseWebcamReturn {
-  const { facingMode: initialFacing = 'environment', enabled = true } = options;
+  const { facingMode: initialFacing = 'environment', enabled = true, videoResolution = '4K @ 30fps', stabilizationEnabled = true } = options;
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [isFront, setIsFront] = useState(initialFacing === 'user');
   const [error, setError] = useState<string | null>(null);
+  const [focusSupported, setFocusSupported] = useState(false);
   const [, setVersion] = useState(0);
+  const focusValue = useCameraStore((s) => s.focusValue);
+  const setFocusValue = useCameraStore((s) => s.setFocusValue);
+  const setStoreFocusSupported = useCameraStore((s) => s.setFocusSupported);
+
+  const applyFocus = useCallback(async (value: number) => {
+    setFocusValue(value);
+    const track = streamRef.current?.getVideoTracks()[0];
+    const supported = await applyTrackFocus(track, value, stabilizationEnabled);
+    setFocusSupported(supported);
+    setStoreFocusSupported(supported);
+  }, [setFocusValue, setStoreFocusSupported, stabilizationEnabled]);
 
   const startStream = useCallback(async (facing: 'user' | 'environment') => {
     if (!enabled) return;
@@ -29,7 +107,7 @@ export function useWebcam(options: UseWebcamOptions = {}): UseWebcamReturn {
         streamRef.current.getTracks().forEach((t) => t.stop());
       }
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: facing, width: { ideal: 1920 }, height: { ideal: 1080 } },
+        video: { facingMode: facing, ...getResolutionConstraints(videoResolution) },
         audio: false,
       });
       streamRef.current = stream;
@@ -37,11 +115,16 @@ export function useWebcam(options: UseWebcamOptions = {}): UseWebcamReturn {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
+      const supportsManualFocus = await applyTrackFocus(stream.getVideoTracks()[0], focusValue, stabilizationEnabled);
+      setFocusSupported(supportsManualFocus);
+      setStoreFocusSupported(supportsManualFocus);
       setVersion((v) => v + 1);
     } catch (err) {
+      setFocusSupported(false);
+      setStoreFocusSupported(false);
       setError(err instanceof Error ? err.message : 'Camera access denied');
     }
-  }, [enabled]);
+  }, [enabled, focusValue, setStoreFocusSupported, stabilizationEnabled, videoResolution]);
 
   const switchCamera = useCallback(() => {
     setIsFront((prev) => {
@@ -54,13 +137,17 @@ export function useWebcam(options: UseWebcamOptions = {}): UseWebcamReturn {
   useEffect(() => {
     if (!enabled) {
       if (streamRef.current) { streamRef.current.getTracks().forEach((t) => t.stop()); streamRef.current = null; }
+      setFocusSupported(false);
+      setStoreFocusSupported(false);
       return;
     }
     startStream(isFront ? 'user' : 'environment');
-    return () => { if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop()); };
-  }, [enabled, isFront, startStream]);
+    return () => {
+      if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
+    };
+  }, [enabled, isFront, startStream, setStoreFocusSupported]);
 
-  return { videoRef, stream: streamRef.current, error, switchCamera, isFrontCamera: isFront };
+  return { videoRef, stream: streamRef.current, error, switchCamera, isFrontCamera: isFront, focusSupported, applyFocus };
 }
 
 interface CaptureOptions {

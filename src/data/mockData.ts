@@ -98,18 +98,18 @@ export const GALLERY_ITEMS: ReadonlyArray<GalleryItem> = [
 export const SETTINGS_SECTIONS: ReadonlyArray<SettingsSection> = [
   {
     id: 'capture',
-    title: 'CAMTURE',
+    title: 'CAPTURE',
     rows: [
       { id: 'raw', icon: 'raw', iconColor: 'primary', label: 'RAW Capture', action: { type: 'toggle', value: false } },
-      { id: 'jpeg-quality', icon: 'image', iconColor: 'primary', label: 'JPEG Quality', description: 'Maximum', action: { type: 'link' } },
-      { id: 'grid', icon: 'grid_on', iconColor: 'primary', label: 'Show Grid', action: { type: 'toggle', value: true } },
+      { id: 'jpeg-quality', icon: 'image', iconColor: 'primary', label: 'JPEG Quality', action: { type: 'select', value: 'Maximum', options: ['Medium', 'High', 'Maximum'] } },
+      { id: 'grid', icon: 'grid_on', iconColor: 'primary', label: 'Show Grid', action: { type: 'toggle', value: false } },
     ],
   },
   {
     id: 'video',
     title: 'VIDEO',
     rows: [
-      { id: 'video-res', icon: 'videocam', iconColor: 'primary', label: 'Video Resolution', description: '4K @ 30fps', action: { type: 'link' } },
+      { id: 'video-res', icon: 'videocam', iconColor: 'primary', label: 'Video Resolution', action: { type: 'select', value: '4K @ 30fps', options: ['1080p @ 30fps', '1080p @ 60fps', '4K @ 30fps'] } },
       { id: 'stabilization', icon: 'stabilization', iconColor: 'primary', label: 'Video Stabilization', action: { type: 'toggle', value: true } },
     ],
   },
@@ -126,7 +126,7 @@ export const SETTINGS_SECTIONS: ReadonlyArray<SettingsSection> = [
     id: 'storage',
     title: 'STORAGE',
     rows: [
-      { id: 'save-location', icon: 'folder', iconColor: 'primary', label: 'Save Location', description: 'Internal Storage', action: { type: 'link' } },
+      { id: 'save-location', icon: 'folder', iconColor: 'primary', label: 'Save Location', action: { type: 'select', value: 'Browser Downloads', options: ['Browser Downloads', 'Gallery Only'] } },
       { id: 'geotag', icon: 'location_on', iconColor: 'primary', label: 'Geotag Photos', action: { type: 'toggle', value: true } },
     ],
   },

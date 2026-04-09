@@ -30,7 +30,7 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({ items, className = '' 
             className={`group relative cursor-pointer ${spanClassMap[item.span] ?? 'col-span-1'} ${isSelected ? 'ring-2 ring-primary rounded-xl' : ''}`}
             onClick={() => toggleSelectItem(item.id)}
           >
-            <GalleryImage src={item.src} alt={item.alt} type={item.type} />
+            <GalleryImage src={item.src} alt={item.alt} type={item.type} videoSrc={item.videoSrc} />
             {item.exif && <EXIFDataOverlay exif={item.exif} />}
             {isSelected && (
               <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">

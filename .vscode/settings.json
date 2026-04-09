@@ -1,0 +1,5 @@
+{
+    "workbench.browser.enableChatTools": true,
+    "workbench.browser.showInTitleBar": true,
+    "workbench.browser.openLocalhostLinks": true
+}

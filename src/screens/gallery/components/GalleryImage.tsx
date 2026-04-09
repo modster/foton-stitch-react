@@ -5,14 +5,30 @@ interface GalleryImageProps {
   readonly src: string;
   readonly alt: string;
   readonly type?: GalleryItemType;
+  readonly videoSrc?: string;
   readonly className?: string;
 }
 
-export const GalleryImage: React.FC<GalleryImageProps> = ({ src, alt, type = 'photo', className = '' }) => {
+export const GalleryImage: React.FC<GalleryImageProps> = ({ src, alt, type = 'photo', videoSrc, className = '' }) => {
   const isDataUrl = src.startsWith('data:');
+  const mediaSrc = videoSrc ?? src;
+
   return (
-    <div className={`aspect-square rounded-xl border border-outline-variant overflow-hidden bg-surface-container group ${className}`}>
-      {isDataUrl ? (
+    <div className={`relative aspect-square rounded-xl border border-outline-variant overflow-hidden bg-surface-container group ${className}`}>
+      {type === 'video' ? (
+        <video
+          src={mediaSrc}
+          poster={isDataUrl ? undefined : src || undefined}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          controls
+          onClick={(event) => event.stopPropagation()}
+        />
+      ) : isDataUrl ? (
         <img
           src={src}
           alt={alt}
@@ -25,7 +41,7 @@ export const GalleryImage: React.FC<GalleryImageProps> = ({ src, alt, type = 'ph
       )}
       {type === 'video' && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-10 h-10 rounded-full bg-black/60 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full border border-zinc-700 bg-black/60 flex items-center justify-center backdrop-blur-sm">
             <span className="material-symbols-outlined text-white text-xl ml-0.5">play_arrow</span>
           </div>
         </div>
