@@ -1,0 +1,62 @@
+{
+  "theme": {
+    "colors": {
+      "primary": "#a78bfa",
+      "primary-container": "#7c3aed",
+      "on-primary": "#0a0012",
+      "on-primary-container": "#ede9fe",
+      "primary-fixed": "#ede9fe",
+      "primary-fixed-dim": "#c4b5fd",
+      "inverse-primary": "#5b21b6",
+      "on-primary-fixed": "#2e1065",
+      "on-primary-fixed-variant": "#5b21b6",
+      "secondary": "#71717a",
+      "secondary-container": "#27272a",
+      "on-secondary": "#09090b",
+      "on-secondary-container": "#a1a1aa",
+      "secondary-fixed": "#a1a1aa",
+      "secondary-fixed-dim": "#71717a",
+      "on-secondary-fixed": "#18181b",
+      "on-secondary-fixed-variant": "#3f3f46",
+      "tertiary": "#34d399",
+      "tertiary-container": "#065f46",
+      "on-tertiary": "#001a12",
+      "on-tertiary-container": "#bbf7d0",
+      "tertiary-fixed": "#bbf7d0",
+      "tertiary-fixed-dim": "#6ee7b7",
+      "on-tertiary-fixed": "#003318",
+      "on-tertiary-fixed-variant": "#047857",
+      "error": "#ef4444",
+      "error-container": "#3b1111",
+      "on-error": "#1a0000",
+      "on-error-container": "#fca5a5",
+      "background": "#09090b",
+      "on-background": "#fafafa",
+      "surface": "#0c0c0f",
+      "on-surface": "#fafafa",
+      "on-surface-variant": "#a1a1aa",
+      "surface-variant": "#18181b",
+      "surface-dim": "#0c0c0f",
+      "surface-bright": "#18181b",
+      "surface-container-lowest": "#09090b",
+      "surface-container-low": "#0f0f12",
+      "surface-container": "#121215",
+      "surface-container-high": "#18181b",
+      "surface-container-highest": "#1e1e22",
+      "inverse-surface": "#fafafa",
+      "inverse-on-surface": "#09090b",
+      "outline": "#52525b",
+      "outline-variant": "#27272a"
+    },
+    "typography": {
+      "display": ["Geist", "sans-serif"],
+      "mono": ["Geist Mono", "monospace"],
+      "icons": "Material Symbols Outlined"
+    },
+    "spacing": {
+      "header-h": "56px",
+      "bottom-bar-h": "96px",
+      "container-max": "672px"
+    }
+  }
+}
