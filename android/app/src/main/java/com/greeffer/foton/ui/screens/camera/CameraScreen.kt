@@ -27,7 +27,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.weight
+//import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -60,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import com.greeffer.foton.camera.CameraController
 import com.greeffer.foton.data.ModeRegistry
@@ -374,7 +375,9 @@ fun CameraScreen(
             visible = flashOverlayVisible,
             modifier = Modifier.fillMaxSize(),
         ) {
-            Box(modifier = Modifier.fillMaxSize().background(Color.White.copy(alpha = 0.92f)))
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White.copy(alpha = 0.92f)))
         }
     }
 }
@@ -438,10 +441,15 @@ private fun CameraTopBar(
     onToggleGrid: () -> Unit,
     onToggleFocusSlider: () -> Unit,
 ) {
+
     FotonTopAppBar(
         title = "Camera",
         leftContent = {
-            GlassIconButton(onClick = onOpenSettings, icon = iconForName("settings"), contentDescription = "Settings")
+            GlassIconButton(
+                onClick = onOpenSettings,
+                icon = iconForName("settings"),
+                contentDescription = "Settings"
+            )
             ModeRegistry.getModes().forEach { mode ->
                 GlassIconButton(
                     onClick = { onModeSelected(mode.id) },
@@ -456,7 +464,10 @@ private fun CameraTopBar(
                 modifier = Modifier.clickable(onClick = onToggleRaw),
                 color = if (showRaw) FotonColors.Tertiary.copy(alpha = 0.14f) else Color.Transparent,
                 shape = RoundedCornerShape(6.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, if (showRaw) FotonColors.Tertiary.copy(alpha = 0.35f) else FotonColors.Border),
+                border = androidx.compose.foundation.BorderStroke(
+                    1.dp,
+                    if (showRaw) FotonColors.Tertiary.copy(alpha = 0.35f) else FotonColors.Border
+                ),
             ) {
                 Text(
                     text = "RAW",
@@ -476,8 +487,18 @@ private fun CameraTopBar(
                 ),
                 contentDescription = "Flash",
             )
-            GlassIconButton(onClick = onToggleGrid, icon = iconForName("grid_on"), contentDescription = "Grid", active = showGrid)
-            GlassIconButton(onClick = onToggleFocusSlider, icon = iconForName("straighten"), contentDescription = "Focus", active = showFocusSlider)
+            GlassIconButton(
+                onClick = onToggleGrid,
+                icon = iconForName("grid_on"),
+                contentDescription = "Grid",
+                active = showGrid
+            )
+            GlassIconButton(
+                onClick = onToggleFocusSlider,
+                icon = iconForName("straighten"),
+                contentDescription = "Focus",
+                active = showFocusSlider
+            )
         },
     )
 }
@@ -644,14 +665,20 @@ private fun LevelOverlay(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(modifier = Modifier.weight(1f).height(1.dp).background(FotonColors.Tertiary.copy(alpha = 0.72f)))
+        Box(modifier = Modifier
+            .weight(1f)
+            .height(1.dp)
+            .background(FotonColors.Tertiary.copy(alpha = 0.72f)))
         Box(
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .size(12.dp)
                 .border(1.dp, FotonColors.Tertiary.copy(alpha = 0.72f), CircleShape),
         )
-        Box(modifier = Modifier.weight(1f).height(1.dp).background(FotonColors.Tertiary.copy(alpha = 0.72f)))
+        Box(modifier = Modifier
+            .weight(1f)
+            .height(1.dp)
+            .background(FotonColors.Tertiary.copy(alpha = 0.72f)))
     }
 }
 
@@ -686,14 +713,20 @@ private fun ModeOverlay(
 ) {
     Box(modifier = modifier) {
         when (cameraState.activeModeId) {
-            CameraModeId.PHOTO -> PhotoModeDecoration(modifier = Modifier.align(Alignment.TopStart).padding(top = 112.dp, start = 24.dp))
+            CameraModeId.PHOTO -> PhotoModeDecoration(modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(top = 112.dp, start = 24.dp))
             CameraModeId.VIDEO -> VideoModeDecoration(
-                modifier = Modifier.align(Alignment.TopEnd).padding(top = 112.dp, end = 24.dp),
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 112.dp, end = 24.dp),
                 recordingElapsedMs = cameraState.recordingElapsedMs,
                 active = cameraState.isRecording,
             )
             CameraModeId.LONG_EXPOSURE -> LongExposureModeDecoration(
-                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 214.dp),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 214.dp),
                 cameraState = cameraState,
                 onPresetSelected = onPresetSelected,
                 onSubModeSelected = onSubModeSelected,
@@ -743,8 +776,8 @@ private fun VideoModeDecoration(
     }
 
     val totalSeconds = recordingElapsedMs / 1_000L
-    val minutes = String(totalSeconds / 60).padStart(2, '0')
-    val seconds = String(totalSeconds % 60).padStart(2, '0')
+    val minutes = (totalSeconds / 60).toString().padStart(2, '0')
+    val seconds = (totalSeconds % 60).toString().padStart(2, '0')
 
     MetricChip(
         modifier = modifier,
@@ -763,7 +796,9 @@ private fun LongExposureModeDecoration(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 24.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         if (cameraState.isExposing) {
@@ -828,7 +863,9 @@ private fun ModeSelector(
                 )
                 if (isActive) {
                     Spacer(modifier = Modifier.height(4.dp))
-                    Box(modifier = Modifier.size(4.dp).background(FotonColors.Tertiary, CircleShape))
+                    Box(modifier = Modifier
+                        .size(4.dp)
+                        .background(FotonColors.Tertiary, CircleShape))
                 }
             }
         }
@@ -942,15 +979,130 @@ private fun ShutterButton(
                 contentAlignment = Alignment.Center,
             ) {
                 when (activeModeId) {
-                    CameraModeId.PHOTO -> Box(modifier = Modifier.size(52.dp).background(FotonColors.Text, CircleShape))
+                    CameraModeId.PHOTO -> Box(modifier = Modifier
+                        .size(52.dp)
+                        .background(FotonColors.Text, CircleShape))
                     CameraModeId.VIDEO -> Box(
                         modifier = Modifier
                             .size(22.dp)
-                            .background(FotonColors.Text, if (isRecording) RoundedCornerShape(4.dp) else CircleShape),
+                            .background(
+                                FotonColors.Text,
+                                if (isRecording) RoundedCornerShape(4.dp) else CircleShape
+                            ),
                     )
-                    CameraModeId.LONG_EXPOSURE -> Box(modifier = Modifier.size(44.dp).background(FotonColors.Text, CircleShape))
+                    CameraModeId.LONG_EXPOSURE -> Box(modifier = Modifier
+                        .size(44.dp)
+                        .background(FotonColors.Text, CircleShape))
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun CameraScreenPreviewContent(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(FotonColors.Background),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF1C1C1C)),
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            FotonColors.Background.copy(alpha = 0.62f),
+                            Color.Transparent,
+                            FotonColors.Background.copy(alpha = 0.74f),
+                        ),
+                    ),
+                ),
+        )
+
+        CameraTopBar(
+            activeModeId = CameraModeId.PHOTO,
+            showGrid = true,
+            showRaw = false,
+            flashMode = FlashMode.AUTO,
+            showFocusSlider = false,
+            onModeSelected = {},
+            onOpenSettings = {},
+            onToggleRaw = {},
+            onCycleFlash = {},
+            onToggleGrid = {},
+            onToggleFocusSlider = {},
+        )
+
+        HudOverlay(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 92.dp, start = 24.dp, end = 24.dp),
+            chips = buildHudValues(CameraModeId.PHOTO, "4K @ 30fps", 2_000L),
+            zoomLabel = "1x · 24mm",
+        )
+
+        ViewfinderGrid(modifier = Modifier.fillMaxSize())
+
+        ModeSelector(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 94.dp),
+            activeModeId = CameraModeId.PHOTO,
+            onModeSelected = {},
+        )
+
+        CameraBottomBar(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 12.dp),
+            latestGalleryItem = null,
+            activeModeId = CameraModeId.PHOTO,
+            isRecording = false,
+            isExposing = false,
+            exposureProgress = 0f,
+            onOpenGallery = {},
+            onFlipCamera = {},
+            onShutter = {},
+        )
+    }
+}
+
+@Preview(name = "Phone", showBackground = true, device = "spec:width=411dp,height=891dp,dpi=420")
+@Composable
+private fun CameraScreenPhonePreview() {
+    MaterialTheme {
+        CameraScreenPreviewContent()
+    }
+}
+@Preview(name = "Landscape", showBackground = true, device = "spec:width=891dp,height=411dp,dpi=420")
+@Composable
+private fun CameraScreenPhoneLandscapePreview() {
+    MaterialTheme {
+        CameraScreenPreviewContent()
+    }
+}
+
+
+@Preview(name = "Tablet", showBackground = true, device = "spec:width=800dp,height=1280dp,dpi=240")
+@Composable
+private fun CameraScreenTabletPreview() {
+    MaterialTheme {
+        CameraScreenPreviewContent()
+    }
+}
+
+@Preview(name = "Desktop", showBackground = true, widthDp = 1440, heightDp = 900)
+@Composable
+private fun CameraScreenDesktopPreview() {
+    MaterialTheme {
+        CameraScreenPreviewContent()
     }
 }

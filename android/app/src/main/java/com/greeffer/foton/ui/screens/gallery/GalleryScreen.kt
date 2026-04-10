@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -50,6 +49,7 @@ import com.greeffer.foton.ui.components.FotonTopAppBar
 import com.greeffer.foton.ui.components.PlaceholderMedia
 import com.greeffer.foton.ui.components.iconForName
 import com.greeffer.foton.ui.theme.FotonColors
+
 
 @Composable
 fun GalleryScreen(
@@ -199,11 +199,15 @@ private fun GalleryCard(
     }
 }
 
+/**
+ * @todo replace placeholders with actual videos. if there aren't any videos in the gallery a plain
+ *      text "No videos here yet."
+ */
 @Composable
 private fun VideoPlaceholder(item: GalleryItem) {
     Box(
         modifier = Modifier
-            .matchParentSize()
+            .fillMaxSize()
             .background(
                 Brush.linearGradient(
                     listOf(

@@ -14,18 +14,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.Cameraswitch
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.FlashAuto
 import androidx.compose.material.icons.outlined.FlashOff
 import androidx.compose.material.icons.outlined.FlashOn
@@ -51,6 +49,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,6 +63,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.greeffer.foton.ui.theme.FotonColors
 
+/**
+ * @todo the back button should pop the backstack. also, the top bar might overflow on small screens.
+ *      DO NOT WRAP, make this element horizontally scrollable instead.
+ */
 @Composable
 fun FotonTopAppBar(
     title: String,
@@ -90,12 +93,12 @@ fun FotonTopAppBar(
             leftContent()
         }
 
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineSmall,
-            color = FotonColors.Text,
-            modifier = Modifier.align(Alignment.Center),
-        )
+//        Text(
+//            text = title,
+//            style = MaterialTheme.typography.headlineSmall,
+//            color = FotonColors.Text,
+//            modifier = Modifier.align(Alignment.Center),
+//        )
 
         Row(
             modifier = Modifier.align(Alignment.CenterEnd),
@@ -120,7 +123,7 @@ fun GlassIconButton(
             .clip(CircleShape)
             .background(if (active) FotonColors.Tertiary.copy(alpha = 0.14f) else Color.Transparent)
             .clickable(
-                interactionSource = MutableInteractionSource(),
+                interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 onClick = onClick,
             )
@@ -216,6 +219,9 @@ fun SettingToggle(
     )
 }
 
+/**
+ * @todo eliminate placeholders in favor of actual data or a "nothing here" message.
+ */
 @Composable
 fun PlaceholderMedia(
     label: String,
@@ -264,7 +270,7 @@ fun iconForName(name: String): ImageVector {
         "folder" -> Icons.Outlined.Folder
         "location_on" -> Icons.Outlined.LocationOn
         "info" -> Icons.Outlined.Info
-        "chevron_right" -> Icons.AutoMirrored.Outlined.ChevronRight
+        "chevron_right" -> Icons.Outlined.ChevronRight
         "check" -> Icons.Outlined.Check
         "star" -> Icons.Outlined.Star
         "water" -> Icons.Outlined.WaterDrop

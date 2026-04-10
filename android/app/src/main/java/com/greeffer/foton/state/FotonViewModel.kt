@@ -97,12 +97,15 @@ class FotonViewModel : ViewModel() {
         updateCamera { it.copy(activeLensId = lensId) }
     }
 
-    fun setFocusValue(value: Float) {
-        updateCamera { it.copy(focusValue = value.coerceIn(0f, 1f)) }
-    }
-
+    /**
+     * @todo make use of this
+     */
     fun setFocusSupported(supported: Boolean) {
         updateCamera { it.copy(focusSupported = supported) }
+    }
+
+    fun setFocusValue(value: Float) {
+        updateCamera { it.copy(focusValue = value.coerceIn(0f, 1f)) }
     }
 
     fun toggleGrid() {
@@ -114,21 +117,37 @@ class FotonViewModel : ViewModel() {
         updateCamera { it.copy(showFocusSlider = !it.showFocusSlider) }
     }
 
+    /**
+     * @todo right now the level is not operational. priority: low
+     */
     fun toggleLevel() {
         val next = !uiState.camera.showLevel
         applyCameraToggle("level", next) { it.copy(showLevel = next) }
     }
 
+    /**
+     * @todo right now the histogram is not operational. priority: low
+     */
     fun toggleHistogram() {
         val next = !uiState.camera.showHistogram
         applyCameraToggle("histogram", next) { it.copy(showHistogram = next) }
     }
 
+    /**
+     * @todo right now the histogram is not operational. priority: low
+     */
     fun toggleOverexposureWarning() {
         val next = !uiState.camera.showOverexposureWarning
         applyCameraToggle("overexposure", next) { it.copy(showOverexposureWarning = next) }
     }
 
+
+    /**
+     * @todo on the back camera there should be four settings to cycle through. OFF, AUTO, ALWAYS ON,
+     *      and TORCH. There are two types of flash as well, SINGLE_SHOOT, TORCH, SCREEN_FLASH.
+     *      is only on the front camera in case there isn't a flash available. Look it up.
+     *      priority: high
+     */
     fun cycleFlash() {
         updateCamera {
             val next = when (it.flashMode) {
@@ -140,6 +159,10 @@ class FotonViewModel : ViewModel() {
         }
     }
 
+
+    /**
+     * @todo right now the RAW_MODE is not operational. priority: low
+     */
     fun toggleRaw() {
         val next = !uiState.camera.showRaw
         applyCameraToggle("raw", next) { it.copy(showRaw = next) }
@@ -149,6 +172,10 @@ class FotonViewModel : ViewModel() {
         uiState = uiState.copy(gallery = uiState.gallery.copy(filterMode = mode))
     }
 
+
+    /**
+     * @todo right now the toggle works, but doesn't do anything useful. It should select items to share, delete, etc... priority: low
+     */
     fun toggleSelectItem(id: String) {
         val selected = uiState.gallery.selectedItemIds.toMutableSet().apply {
             if (contains(id)) remove(id) else add(id)
